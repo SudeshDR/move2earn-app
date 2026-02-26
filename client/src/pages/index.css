@@ -1,0 +1,264 @@
+/* ===== GLOBAL RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+/* ===== NAVBAR ===== */
+
+.navbar {
+  width: 100%;
+  background: #0a0a0a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+}
+
+.navbar-logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #39ff14;
+  letter-spacing: 2px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 30px;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  color: white;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+.navbar-links a:hover {
+  color: #39ff14;
+}
+
+.navbar-button {
+  background: transparent;
+  border: 1px solid #39ff14;
+  color: #39ff14;
+  padding: 6px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.navbar-button:hover {
+  background: #39ff14;
+  color: black;
+}
+/* ===== BODY THEME ===== */
+body {
+  background-color: #0a0a0a;
+  color: #ffffff;
+  min-height: 100vh;
+}
+
+/* ===== NEON ACCENT COLOR ===== */
+:root {
+  --neon: #39ff14;
+  --dark: #0a0a0a;
+  --card-bg: #111111;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  width: 90%;
+  max-width: 1100px;
+  margin: 120px auto 60px auto;
+  text-align: center;
+}
+
+/* ===== HEADINGS ===== */
+h1, h2, h3 {
+  color: var(--neon);
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+/* ===== CARD STYLE ===== */
+.card {
+  background: var(--card-bg);
+  padding: 25px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.15);
+  transition: 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0 25px rgba(57, 255, 20, 0.4);
+  transform: translateY(-3px);
+}
+
+/* ===== BUTTON STYLE ===== */
+button {
+  background: var(--neon);
+  color: black;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  background: black;
+  color: var(--neon);
+  border: 1px solid var(--neon);
+  box-shadow: 0 0 15px var(--neon);
+}
+
+/* ===== INPUT STYLE ===== */
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0 20px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 10px;
+  color: white;
+  outline: none;
+  transition: 0.3s;
+}
+
+input:focus {
+  border-color: var(--neon);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+}
+
+/* ===== TABLE STYLE (Transaction History) ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 14px;
+  text-align: left;
+}
+
+th {
+  background: #111;
+  color: var(--neon);
+}
+
+tr {
+  border-bottom: 1px solid #222;
+}
+
+tr:hover {
+  background: #151515;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  background: #000;
+  padding: 20px;
+  border-bottom: 1px solid #222;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+  transition: 0.3s;
+}
+
+.navbar a:hover {
+  color: var(--neon);
+}
+
+/* ===== CENTER BOX (Login/Register Pages) ===== */
+.auth-box {
+  max-width: 400px;
+  margin: 100px auto;
+  background: #111;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+}
+/* ===== DASHBOARD GRID ===== */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+  margin-top: 40px;
+}
+
+/* ===== DASHBOARD CARD ===== */
+
+.stat-card {
+  background: #111;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  position: relative;
+  transition: 0.3s ease;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.15);
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 30px rgba(57, 255, 20, 0.4);
+}
+
+/* Icon circle */
+.stat-icon {
+  font-size: 32px;
+  margin-bottom: 15px;
+  color: #39ff14;
+}
+
+/* Big number */
+.stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Label text */
+.stat-label {
+  font-size: 14px;
+  color: #aaa;
+  letter-spacing: 1px;
+}
+
+/* ===== PROGRESS BAR ===== */
+
+.progress-container {
+  margin-top: 40px;
+}
+
+.progress-bar {
+  height: 12px;
+  width: 100%;
+  background: #222;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #39ff14;
+  width: 60%; /* change dynamically */
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px #39ff14;
+}

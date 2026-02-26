@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import "./index.css"
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -67,36 +68,59 @@ function Dashboard() {
 
   if (!user) return null;
 
-  return (
-    <div style={containerStyle}>
-      <h2>Welcome {user.name}</h2>
+ return (
+  <div className="container">
+    <h2>👋 Welcome {user.name}</h2>
 
-      <h3>Total Steps: {user.totalSteps}</h3>
-      <h3>Coins: {user.coins}</h3>
-      <h3>Withdraw Coins</h3>
+    <div className="dashboard-grid">
 
-      <input
-        type="number"
-        placeholder="Enter coins to withdraw"
-        value={withdrawAmount}
-        onChange={(e) => setWithdrawAmount(e.target.value)}
-      />
+      <div className="stat-card">
+        <div className="stat-icon">👟</div>
+        <div className="stat-value">{user.totalSteps}</div>
+        <div className="stat-label">TOTAL STEPS</div>
+      </div>
 
-      <button onClick={withdrawCoins}>Withdraw</button>
-      <input
-        type="number"
-        placeholder="Enter steps"
-        value={stepsToAdd}
-        onChange={(e) => setStepsToAdd(e.target.value)}
-      />
+      <div className="stat-card">
+        <div className="stat-icon">🪙</div>
+        <div className="stat-value">{user.coins}</div>
+        <div className="stat-label">TOTAL COINS</div>
+      </div>
 
-      <button onClick={addSteps}>Add Steps</button>
+      <div className="stat-card">
+        <div className="stat-icon">💸</div>
+        <div className="stat-label">Withdraw Coins</div>
 
-      <button onClick={logout} style={{ marginTop: "20px" }}>
-        Logout
-      </button>
+        <input
+          type="number"
+          placeholder="Enter coins"
+          value={withdrawAmount}
+          onChange={(e) => setWithdrawAmount(e.target.value)}
+        />
+
+        <button onClick={withdrawCoins}>Withdraw</button>
+      </div>
+
+      <div className="stat-card">
+        <div className="stat-icon">➕</div>
+        <div className="stat-label">Add Steps</div>
+
+        <input
+          type="number"
+          placeholder="Enter steps"
+          value={stepsToAdd}
+          onChange={(e) => setStepsToAdd(e.target.value)}
+        />
+
+        <button onClick={addSteps}>Add Steps</button>
+      </div>
+
     </div>
-  );
+
+    <button onClick={logout} style={{ marginTop: "40px" }}>
+      Logout
+    </button>
+  </div>
+);
 }
 
 const containerStyle = {

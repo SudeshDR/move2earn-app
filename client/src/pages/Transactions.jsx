@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
+import "./index.css";
 
 function Transactions() {
   const navigate = useNavigate();
