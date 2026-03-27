@@ -29,7 +29,7 @@ const backendWallet = new ethers.Wallet(
   process.env.PRIVATE_KEY,
   provider
 );
-
+console.log(backendWallet.address);
 // Minimal ERC20 ABI
 const tokenABI = [
   "function transfer(address to, uint256 amount) public returns (bool)"

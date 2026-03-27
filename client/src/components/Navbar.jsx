@@ -11,7 +11,7 @@ function Navbar() {
 
   return (
     <div className="navbar">
-      <div className="navbar-logo">M2E ⚡</div>
+      <div className="navbar-logo">Move2earn⚡</div>
 
       <div className="navbar-links">
         {user && <Link to="/dashboard">Dashboard</Link>}
