@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const StepLog = require("../models/StepLog");
 
 const router = express.Router();
 
@@ -12,21 +13,43 @@ router.post("/add-steps", async (req, res) => {
     const { userId, steps } = req.body;
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    const coinsEarned = Math.floor(steps / process.env.COIN_RATE);
 
     user.totalSteps += Number(steps);
-
-    // Mining logic
-    const coinRate = Number(process.env.COIN_RATE);
-    user.coins = Math.floor(user.totalSteps / coinRate);
+    user.coins += coinsEarned;
 
     await user.save();
 
+    // ✅ SAVE MINING HISTORY
+    await StepLog.create({
+      userId,
+      steps,
+      coinsEarned
+    });
+const log = await StepLog.create({
+  userId,
+  steps,
+  coinsEarned
+});
+
+console.log("Step log saved:", log);
     res.json({
       totalSteps: user.totalSteps,
       coins: user.coins
     });
 
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+router.get("/history/:userId", async (req, res) => {
+  try {
+    const logs = await StepLog.find({ userId: req.params.userId })
+      .sort({ createdAt: -1 });
+
+    res.json(logs);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

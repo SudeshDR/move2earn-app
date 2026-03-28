@@ -72,16 +72,45 @@ function Dashboard() {
 
   return (
     <div style={pageStyle}>
-
       {/* HEADER */}
       <div style={header}>
         <h2>🚀 Move2Earn Dashboard</h2>
-        <button onClick={logout} style={logoutBtn}>Logout</button>
+        
+        <button onClick={logout} style={logoutBtn}>
+          Logout
+        </button>
+        
       </div>
 
       {/* WELCOME */}
       <h1 style={{ marginTop: "20px" }}>Welcome, {user.name} 👋</h1>
+      <div className="dashboard-grid">
+        <div className="card">
+          <h3>🚶 Total Steps</h3>
+          <p>{user.totalSteps}</p>
+        </div>
 
+        <div className="card">
+          <h3>💰 Coins</h3>
+          <p>{user.coins}</p>
+        </div>
+
+        <div className="card">
+          <h3>⚡ Mining Rate</h3>
+          <p>1 coin / 1000 steps</p>
+        </div>
+
+        <div className="card">
+          <h3>🔥 Activity</h3>
+          <p>
+            {user.totalSteps > 10000
+              ? "🔥 High"
+              : user.totalSteps > 5000
+                ? "⚡ Medium"
+                : "😴 Low"}
+          </p>
+        </div>
+      </div>
       {/* STATS */}
       <div style={statsContainer}>
         <div style={statCard}>
@@ -97,7 +126,6 @@ function Dashboard() {
 
       {/* ACTIONS */}
       <div style={actionsContainer}>
-
         {/* ADD STEPS */}
         <div style={actionCard}>
           <h3>Add Steps</h3>
@@ -127,26 +155,124 @@ function Dashboard() {
             Withdraw
           </button>
         </div>
+      </div>
+      <div className="history-card">
+        <p className="history-text">
+          📊 Want to track your earnings and withdrawals?
+          <br />
+          Let’s see your transaction history 👇
+        </p>
 
+        <button className="history-btn" onClick={() => navigate("/history")}>
+          View Transaction History →
+        </button>
       </div>
 
+      <div className="mining-card">
+        <p className="mining-text">
+          ⛏️ Curious how your steps turned into coins?
+          <br />
+          Check your mining activity and earnings 👇
+        </p>
+
+        <button
+          className="mining-btn"
+          onClick={() => navigate("/mining-history")}
+        >
+          View Mining History →
+        </button>
+      </div>
+
+      <div className="history-card">
+        <p className="history-text">
+          🏆 Compete with others and see your ranking!
+        </p>
+
+        <button
+          className="history-btn"
+          onClick={() => navigate("/leaderboard")}
+        >
+          View Leaderboard →
+        </button>
+      </div>
+
+      <div id="toast-container"></div>
+      {/* HOW IT WORKS SECTION */}
+<div style={howSection}>
+  <h2 style={{ marginBottom: "20px" }}>🚀 How It Works</h2>
+
+  <div style={howGrid}>
+    <div style={howCard}>
+      <span>👤</span>
+      <h4>Signup</h4>
+      <p>Create your account and login</p>
+    </div>
+
+    <div style={howCard}>
+      <span>👣</span>
+      <h4>Add Steps</h4>
+      <p>Enter your daily steps</p>
+    </div>
+
+    <div style={howCard}>
+      <span>💰</span>
+      <h4>Earn Coins</h4>
+      <p>Steps convert into coins</p>
+    </div>
+
+    <div style={howCard}>
+      <span>🔗</span>
+      <h4>Blockchain</h4>
+      <p>Stored securely on-chain</p>
+    </div>
+
+    <div style={howCard}>
+      <span>💸</span>
+      <h4>Withdraw</h4>
+      <p>Send coins to wallet</p>
+    </div>
+
+    <div style={howCard}>
+      <span>📊</span>
+      <h4>Track</h4>
+      <p>View history anytime</p>
+    </div>
+  </div>
+</div>
     </div>
   );
 }
 
 /* ---------- STYLES ---------- */
+const howSection = {
+  marginTop: "60px",
+  width: "100%",
+  textAlign: "center",
+};
 
+const howGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+  gap: "20px",
+};
+
+const howCard = {
+  background: "#1e293b",
+  padding: "20px",
+  borderRadius: "15px",
+  color: "white",
+};
 const pageStyle = {
   minHeight: "100vh",
   background: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
   color: "white",
-  padding: "20px"
+  padding: "20px",
 };
 
 const header = {
   display: "flex",
   justifyContent: "space-between",
-  alignItems: "center"
+  alignItems: "center",
 };
 
 const logoutBtn = {
@@ -155,14 +281,14 @@ const logoutBtn = {
   border: "none",
   background: "#ff4d4d",
   color: "white",
-  cursor: "pointer"
+  cursor: "pointer",
 };
 
 const statsContainer = {
   display: "flex",
   gap: "20px",
   marginTop: "30px",
-  flexWrap: "wrap"
+  flexWrap: "wrap",
 };
 
 const statCard = {
@@ -173,20 +299,20 @@ const statCard = {
   borderRadius: "15px",
   backdropFilter: "blur(10px)",
   boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-  textAlign: "center"
+  textAlign: "center",
 };
 
 const statValue = {
   fontSize: "28px",
   fontWeight: "bold",
-  marginTop: "10px"
+  marginTop: "10px",
 };
 
 const actionsContainer = {
   display: "flex",
   gap: "20px",
   marginTop: "40px",
-  flexWrap: "wrap"
+  flexWrap: "wrap",
 };
 
 const actionCard = {
@@ -196,7 +322,7 @@ const actionCard = {
   padding: "20px",
   borderRadius: "15px",
   backdropFilter: "blur(10px)",
-  boxShadow: "0 4px 20px rgba(0,0,0,0.3)"
+  boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
 };
 
 const inputStyle = {
@@ -205,7 +331,7 @@ const inputStyle = {
   marginTop: "10px",
   borderRadius: "8px",
   border: "none",
-  outline: "none"
+  outline: "none",
 };
 
 const buttonStyle = {
@@ -217,7 +343,7 @@ const buttonStyle = {
   background: "#00c6ff",
   color: "black",
   fontWeight: "bold",
-  cursor: "pointer"
+  cursor: "pointer",
 };
 
 export default Dashboard;

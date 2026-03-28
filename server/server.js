@@ -2,12 +2,16 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const leaderboardRoutes = require("./routes/leaderboardRoutes");
 
+require("./models/User");
+require("./models/StepLog");
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use("/api/leaderboard", leaderboardRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
