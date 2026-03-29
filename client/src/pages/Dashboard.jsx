@@ -24,19 +24,19 @@ function Dashboard() {
     }
   }, []);
 
-  // ✅ AUTO WALK LOGIC (REPLACES MOTION SENSOR)
+  // ✅ AUTO WALK LOGIC
   useEffect(() => {
     let interval;
 
     if (autoWalk) {
       interval = setInterval(() => {
-  setMotionSteps((prev) => prev + Math.floor(Math.random() * 2 + 1));
-}, 5000);
+        setMotionSteps((prev) => prev + Math.floor(Math.random() * 2 + 1));
+      }, 5000);
     }
 
     return () => clearInterval(interval);
   }, [autoWalk]);
- 
+
   // ✅ SAVE STEPS
   const saveMotionSteps = async () => {
     try {
@@ -106,40 +106,36 @@ function Dashboard() {
     }
   };
 
-const startRealMotionDemo = async () => {
-  try {
-    // iOS permission
-    if (typeof DeviceMotionEvent !== "undefined" &&
-        typeof DeviceMotionEvent.requestPermission === "function") {
+  // ✅ REAL MOTION (DEMO)
+  const startRealMotionDemo = async () => {
+    try {
+      if (
+        typeof DeviceMotionEvent !== "undefined" &&
+        typeof DeviceMotionEvent.requestPermission === "function"
+      ) {
+        const permission = await DeviceMotionEvent.requestPermission();
 
-      const permission = await DeviceMotionEvent.requestPermission();
-
-      if (permission !== "granted") {
-        alert("Motion permission denied");
-        return;
+        if (permission !== "granted") {
+          alert("Motion permission denied");
+          return;
+        }
       }
+
+      alert("Motion sensor activated ✅");
+
+      window.addEventListener("devicemotion", (event) => {
+        const y = event.accelerationIncludingGravity?.y;
+
+        if (Math.abs(y) > 7) {
+          setMotionSteps((prev) => prev + 1);
+        }
+      });
+    } catch (err) {
+      console.log(err);
+      alert("DeviceMotion not supported");
     }
+  };
 
-    alert("Motion sensor activated ✅");
-
-    window.addEventListener("devicemotion", (event) => {
-      const x = event.accelerationIncludingGravity?.x;
-      const y = event.accelerationIncludingGravity?.y;
-      const z = event.accelerationIncludingGravity?.z;
-
-      console.log("Motion Data:", { x, y, z });
-
-      // 👇 just for demo (small increment)
-      if (Math.abs(y) > 7) {
-        setMotionSteps((prev) => prev + 1);
-      }
-    });
-
-  } catch (err) {
-    console.log(err);
-    alert("DeviceMotion not supported");
-  }
-};
   const logout = () => {
     localStorage.clear();
     navigate("/");
@@ -147,105 +143,189 @@ const startRealMotionDemo = async () => {
 
   if (!user) return null;
 
-  return (
-    <div style={pageStyle}>
-      {/* HEADER */}
-      <div style={header}>
-        <h2>🚀 Move2Earn Dashboard</h2>
-        <button onClick={logout} style={logoutBtn}>
-          Logout
+return (
+  <div style={pageStyle}>
+    {/* HEADER */}
+    <div style={header}>
+      <h2>🚀 Move2Earn Dashboard</h2>
+      <button onClick={logout} style={logoutBtn}>
+        Logout
+      </button>
+    </div>
+
+    <h1 style={{ marginTop: "20px" }}>
+      Welcome, {user.name} 👋
+    </h1>
+
+    {/* DASHBOARD CARDS */}
+    <div className="dashboard-grid">
+      <div className="card">
+        <h3>🚶 Total Steps</h3>
+        <p>{user.totalSteps}</p>
+      </div>
+
+      <div className="card">
+        <h3>💰 Coins</h3>
+        <p>{user.coins}</p>
+      </div>
+
+      <div className="card">
+        <h3>⚡ Mining Rate</h3>
+        <p>1 coin / 1000 steps</p>
+      </div>
+
+      <div className="card">
+        <h3>🔥 Activity</h3>
+        <p>
+          {user.totalSteps > 10000
+            ? "🔥 High"
+            : user.totalSteps > 5000
+            ? "⚡ Medium"
+            : "😴 Low"}
+        </p>
+      </div>
+    </div>
+
+    {/* SMART WALK */}
+    <div style={actionCard}>
+      <h3>🚶 Smart Walking Mode</h3>
+
+      <p>Live Steps: {motionSteps}</p>
+
+      {!autoWalk ? (
+        <button onClick={() => setAutoWalk(true)} style={buttonStyle}>
+          Start Walking
         </button>
-      </div>
+      ) : (
+        <button onClick={() => setAutoWalk(false)} style={buttonStyle}>
+          Stop Walking
+        </button>
+      )}
 
-      <h1 style={{ marginTop: "20px" }}>
-        Welcome, {user.name} 👋
-      </h1>
+      <button
+        onClick={saveMotionSteps}
+        style={{ ...buttonStyle, marginTop: "10px" }}
+      >
+        Save Steps
+      </button>
+    </div>
 
-      {/* DASHBOARD CARDS */}
-      <div className="dashboard-grid">
-        <div className="card">
-          <h3>🚶 Total Steps</h3>
-          <p>{user.totalSteps}</p>
-        </div>
-
-        <div className="card">
-          <h3>💰 Coins</h3>
-          <p>{user.coins}</p>
-        </div>
-
-        <div className="card">
-          <h3>⚡ Mining Rate</h3>
-          <p>1 coin / 1000 steps</p>
-        </div>
-
-        <div className="card">
-          <h3>🔥 Activity</h3>
-          <p>
-            {user.totalSteps > 10000
-              ? "🔥 High"
-              : user.totalSteps > 5000
-              ? "⚡ Medium"
-              : "😴 Low"}
-          </p>
-        </div>
-      </div>
-
-      {/* 🚶 SMART WALK MODE */}
+    {/* ACTIONS */}
+    <div style={actionsContainer}>
       <div style={actionCard}>
-        <h3>🚶 Smart Walking Mode</h3>
-
-        <p>Live Steps: {motionSteps}</p>
-
-        {!autoWalk ? (
-          <button onClick={() => setAutoWalk(true)} style={buttonStyle}>
-            Start Walking
-          </button>
-        ) : (
-          <button onClick={() => setAutoWalk(false)} style={buttonStyle}>
-            Stop Walking
-          </button>
-        )}
-
-        <button
-          onClick={saveMotionSteps}
-          style={{ ...buttonStyle, marginTop: "10px" }}
-        >
-          Save Steps
+        <h3>Add Steps</h3>
+        <input
+          type="number"
+          placeholder="Enter steps"
+          value={stepsToAdd}
+          onChange={(e) => setStepsToAdd(e.target.value)}
+          style={inputStyle}
+        />
+        <button onClick={addSteps} style={buttonStyle}>
+          Add Steps
         </button>
       </div>
 
-      {/* MANUAL + WITHDRAW */}
-      <div style={actionsContainer}>
-        <div style={actionCard}>
-          <h3>Add Steps</h3>
-          <input
-            type="number"
-            placeholder="Enter steps"
-            value={stepsToAdd}
-            onChange={(e) => setStepsToAdd(e.target.value)}
-            style={inputStyle}
-          />
-          <button onClick={addSteps} style={buttonStyle}>
-            Add Steps
-          </button>
+      <div style={actionCard}>
+        <h3>Withdraw Coins</h3>
+        <input
+          type="number"
+          placeholder="Enter coins"
+          value={withdrawAmount}
+          onChange={(e) => setWithdrawAmount(e.target.value)}
+          style={inputStyle}
+        />
+        <button onClick={withdrawCoins} style={buttonStyle}>
+          Withdraw
+        </button>
+      </div>
+    </div>
+
+    {/* HISTORY */}
+    <div className="history-card">
+      <p className="history-text">
+        📊 Want to track your earnings and withdrawals?
+        <br />
+        Let’s see your transaction history 👇
+      </p>
+      <button
+        className="history-btn"
+        onClick={() => navigate("/history")}
+      >
+        View Transaction History →
+      </button>
+    </div>
+
+    <div className="mining-card">
+      <p className="mining-text">
+        ⛏️ Curious how your steps turned into coins?
+        <br />
+        Check your mining activity 👇
+      </p>
+      <button
+        className="mining-btn"
+        onClick={() => navigate("/mining-history")}
+      >
+        View Mining History →
+      </button>
+    </div>
+
+    <div className="history-card">
+      <p className="history-text">
+        🏆 Compete with others and see your ranking!
+      </p>
+      <button
+        className="history-btn"
+        onClick={() => navigate("/leaderboard")}
+      >
+        View Leaderboard →
+      </button>
+    </div>
+
+    {/* HOW IT WORKS SECTION */}
+    <div style={howSection}>
+      <h2 style={{ marginBottom: "20px" }}>🚀 How It Works</h2>
+
+      <div style={howGrid}>
+        <div style={howCard}>
+          <span>👤</span>
+          <h4>Signup</h4>
+          <p>Create your account and login</p>
         </div>
 
-        <div style={actionCard}>
-          <h3>Withdraw Coins</h3>
-          <input
-            type="number"
-            placeholder="Enter coins"
-            value={withdrawAmount}
-            onChange={(e) => setWithdrawAmount(e.target.value)}
-            style={inputStyle}
-          />
-          <button onClick={withdrawCoins} style={buttonStyle}>
-            Withdraw
-          </button>
+        <div style={howCard}>
+          <span>👣</span>
+          <h4>Add Steps</h4>
+          <p>Enter your daily steps</p>
+        </div>
+
+        <div style={howCard}>
+          <span>💰</span>
+          <h4>Earn Coins</h4>
+          <p>Steps convert into coins</p>
+        </div>
+
+        <div style={howCard}>
+          <span>🔗</span>
+          <h4>Blockchain</h4>
+          <p>Stored securely on-chain</p>
+        </div>
+
+        <div style={howCard}>
+          <span>💸</span>
+          <h4>Withdraw</h4>
+          <p>Send coins to wallet</p>
+        </div>
+
+        <div style={howCard}>
+          <span>📊</span>
+          <h4>Track</h4>
+          <p>View history anytime</p>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
 
 /* ---------- STYLES ---------- */
@@ -305,6 +385,23 @@ const buttonStyle = {
   color: "black",
   fontWeight: "bold",
   cursor: "pointer",
+};
+const howSection = {
+  marginTop: "60px",
+  textAlign: "center",
+};
+
+const howGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+  gap: "20px",
+};
+
+const howCard = {
+  background: "#1e293b",
+  padding: "20px",
+  borderRadius: "15px",
+  color: "white",
 };
 
 export default Dashboard;
