@@ -23,49 +23,60 @@ function Dashboard() {
   }, []);
 
   const startTracking = async () => {
-    try {
-      if (typeof DeviceMotionEvent.requestPermission === "function") {
-        const permission = await DeviceMotionEvent.requestPermission();
-        if (permission !== "granted") {
-          alert("Permission denied");
-          return;
-        }
-      }
+  try {
+    // iPhone / Safari
+    if (typeof DeviceMotionEvent !== "undefined" &&
+        typeof DeviceMotionEvent.requestPermission === "function") {
 
-      setIsTracking(true);
-    } catch (err) {
-      console.log(err);
-      alert("Motion not supported");
+      const permission = await DeviceMotionEvent.requestPermission();
+
+      if (permission !== "granted") {
+        alert("Permission denied");
+        return;
+      }
     }
-  };
+
+    // Android (no permission popup usually)
+    setIsTracking(true);
+
+  } catch (err) {
+    console.log(err);
+    alert("Motion not supported on this device");
+  }
+};
 
   const stopTracking = () => {
     setIsTracking(false);
   };
 
   useEffect(() => {
-    let lastY = 0;
+  let lastY = 0;
+  let lastStepTime = 0;
 
-    const handleMotion = (event) => {
-      const y = event.accelerationIncludingGravity?.y;
+  const handleMotion = (event) => {
+    const y = event.accelerationIncludingGravity?.y;
 
-      if (!y) return;
+    if (!y) return;
 
-      if (Math.abs(y - lastY) > 6) {
-        setMotionSteps((prev) => prev + 1);
-      }
+    const now = Date.now();
 
-      lastY = y;
-    };
-
-    if (isTracking) {
-      window.addEventListener("devicemotion", handleMotion);
+    // better step detection
+    if (Math.abs(y - lastY) > 8 && (now - lastStepTime > 400)) {
+      setMotionSteps((prev) => prev + 1);
+      lastStepTime = now;
     }
 
-    return () => {
-      window.removeEventListener("devicemotion", handleMotion);
-    };
-  }, [isTracking]);
+    lastY = y;
+  };
+
+  if (isTracking) {
+    window.addEventListener("devicemotion", handleMotion);
+  }
+
+  return () => {
+    window.removeEventListener("devicemotion", handleMotion);
+  };
+}, [isTracking]);
 
   const withdrawCoins = async () => {
     try {
