@@ -6,6 +6,8 @@ import "./index.css";
 function Dashboard() {
   const navigate = useNavigate();
 
+  const [motionSteps, setMotionSteps] = useState(0);
+  const [isTracking, setIsTracking] = useState(false);
   const [user, setUser] = useState(null);
   const [stepsToAdd, setStepsToAdd] = useState(0);
   const [withdrawAmount, setWithdrawAmount] = useState(0);
@@ -19,6 +21,51 @@ function Dashboard() {
       setUser(storedUser);
     }
   }, []);
+
+  const startTracking = async () => {
+    try {
+      if (typeof DeviceMotionEvent.requestPermission === "function") {
+        const permission = await DeviceMotionEvent.requestPermission();
+        if (permission !== "granted") {
+          alert("Permission denied");
+          return;
+        }
+      }
+
+      setIsTracking(true);
+    } catch (err) {
+      console.log(err);
+      alert("Motion not supported");
+    }
+  };
+
+  const stopTracking = () => {
+    setIsTracking(false);
+  };
+
+  useEffect(() => {
+    let lastY = 0;
+
+    const handleMotion = (event) => {
+      const y = event.accelerationIncludingGravity?.y;
+
+      if (!y) return;
+
+      if (Math.abs(y - lastY) > 6) {
+        setMotionSteps((prev) => prev + 1);
+      }
+
+      lastY = y;
+    };
+
+    if (isTracking) {
+      window.addEventListener("devicemotion", handleMotion);
+    }
+
+    return () => {
+      window.removeEventListener("devicemotion", handleMotion);
+    };
+  }, [isTracking]);
 
   const withdrawCoins = async () => {
     try {
@@ -62,7 +109,28 @@ function Dashboard() {
       alert("Error adding steps");
     }
   };
+const saveMotionSteps = async () => {
+  try {
+    const { data } = await API.post("/steps/add-steps", {
+      userId: user._id,
+      steps: motionSteps,
+    });
 
+    const updatedUser = {
+      ...user,
+      totalSteps: data.totalSteps,
+      coins: data.coins,
+    };
+
+    setUser(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setMotionSteps(0);
+
+    alert("Steps saved!");
+  } catch (err) {
+    alert("Error saving steps");
+  }
+};
   const logout = () => {
     localStorage.clear();
     navigate("/");
@@ -75,15 +143,16 @@ function Dashboard() {
       {/* HEADER */}
       <div style={header}>
         <h2>🚀 Move2Earn Dashboard</h2>
-        
         <button onClick={logout} style={logoutBtn}>
           Logout
         </button>
-        
       </div>
 
       {/* WELCOME */}
-      <h1 style={{ marginTop: "20px" }}>Welcome, {user.name} 👋</h1>
+      <h1 style={{ marginTop: "20px" }}>
+        Welcome, {user.name} 👋
+      </h1>
+
       <div className="dashboard-grid">
         <div className="card">
           <h3>🚶 Total Steps</h3>
@@ -106,11 +175,36 @@ function Dashboard() {
             {user.totalSteps > 10000
               ? "🔥 High"
               : user.totalSteps > 5000
-                ? "⚡ Medium"
-                : "😴 Low"}
+              ? "⚡ Medium"
+              : "😴 Low"}
           </p>
         </div>
       </div>
+
+      {/* WALKING MODE */}
+      <div style={actionCard}>
+        <h3>🚶 Walking Mode</h3>
+
+        <p>Live Steps: {motionSteps}</p>
+
+        {!isTracking ? (
+          <button onClick={startTracking} style={buttonStyle}>
+            Start Walking
+          </button>
+        ) : (
+          <button onClick={stopTracking} style={buttonStyle}>
+            Stop Walking
+          </button>
+        )}
+
+        <button
+          onClick={saveMotionSteps}
+          style={{ ...buttonStyle, marginTop: "10px" }}
+        >
+          Save Steps
+        </button>
+      </div>
+
       {/* STATS */}
       <div style={statsContainer}>
         <div style={statCard}>
@@ -126,7 +220,6 @@ function Dashboard() {
 
       {/* ACTIONS */}
       <div style={actionsContainer}>
-        {/* ADD STEPS */}
         <div style={actionCard}>
           <h3>Add Steps</h3>
           <input
@@ -141,7 +234,6 @@ function Dashboard() {
           </button>
         </div>
 
-        {/* WITHDRAW */}
         <div style={actionCard}>
           <h3>Withdraw Coins</h3>
           <input
@@ -156,6 +248,8 @@ function Dashboard() {
           </button>
         </div>
       </div>
+
+      {/* NAVIGATION CARDS */}
       <div className="history-card">
         <p className="history-text">
           📊 Want to track your earnings and withdrawals?
@@ -163,7 +257,10 @@ function Dashboard() {
           Let’s see your transaction history 👇
         </p>
 
-        <button className="history-btn" onClick={() => navigate("/history")}>
+        <button
+          className="history-btn"
+          onClick={() => navigate("/history")}
+        >
           View Transaction History →
         </button>
       </div>
@@ -197,53 +294,55 @@ function Dashboard() {
       </div>
 
       <div id="toast-container"></div>
-      {/* HOW IT WORKS SECTION */}
-<div style={howSection}>
-  <h2 style={{ marginBottom: "20px" }}>🚀 How It Works</h2>
 
-  <div style={howGrid}>
-    <div style={howCard}>
-      <span>👤</span>
-      <h4>Signup</h4>
-      <p>Create your account and login</p>
-    </div>
+      {/* HOW IT WORKS */}
+      <div style={howSection}>
+        <h2 style={{ marginBottom: "20px" }}>🚀 How It Works</h2>
 
-    <div style={howCard}>
-      <span>👣</span>
-      <h4>Add Steps</h4>
-      <p>Enter your daily steps</p>
-    </div>
+        <div style={howGrid}>
+          <div style={howCard}>
+            <span>👤</span>
+            <h4>Signup</h4>
+            <p>Create your account and login</p>
+          </div>
 
-    <div style={howCard}>
-      <span>💰</span>
-      <h4>Earn Coins</h4>
-      <p>Steps convert into coins</p>
-    </div>
+          <div style={howCard}>
+            <span>👣</span>
+            <h4>Add Steps</h4>
+            <p>Enter your daily steps</p>
+          </div>
 
-    <div style={howCard}>
-      <span>🔗</span>
-      <h4>Blockchain</h4>
-      <p>Stored securely on-chain</p>
-    </div>
+          <div style={howCard}>
+            <span>💰</span>
+            <h4>Earn Coins</h4>
+            <p>Steps convert into coins</p>
+          </div>
 
-    <div style={howCard}>
-      <span>💸</span>
-      <h4>Withdraw</h4>
-      <p>Send coins to wallet</p>
-    </div>
+          <div style={howCard}>
+            <span>🔗</span>
+            <h4>Blockchain</h4>
+            <p>Stored securely on-chain</p>
+          </div>
 
-    <div style={howCard}>
-      <span>📊</span>
-      <h4>Track</h4>
-      <p>View history anytime</p>
-    </div>
-  </div>
-</div>
+          <div style={howCard}>
+            <span>💸</span>
+            <h4>Withdraw</h4>
+            <p>Send coins to wallet</p>
+          </div>
+
+          <div style={howCard}>
+            <span>📊</span>
+            <h4>Track</h4>
+            <p>View history anytime</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 /* ---------- STYLES ---------- */
+
 const howSection = {
   marginTop: "60px",
   width: "100%",
@@ -262,6 +361,7 @@ const howCard = {
   borderRadius: "15px",
   color: "white",
 };
+
 const pageStyle = {
   minHeight: "100vh",
   background: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
