@@ -2,45 +2,23 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const leaderboardRoutes = require("./routes/leaderboardRoutes");
 
-require("./models/User");
-require("./models/StepLog");
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use("/api/leaderboard", leaderboardRoutes);
-// ✅ ADD CORS HERE
-app.use(cors({
-  origin: "https://move2earn.netlify.app"
-}));
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
-
-// Routes
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/steps", require("./routes/stepRoutes"));
-app.use("/api/wallet", require("./route…
-[12:08, 29/03/2026] Sudesh: require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
-
-const leaderboardRoutes = require("./routes/leaderboardRoutes");
-
+// ✅ Load Models (IMPORTANT)
 require("./models/User");
 require("./models/StepLog");
 
-const app = express();
+// ✅ Import Routes
+const authRoutes = require("./routes/authRoutes");
+const stepRoutes = require("./routes/stepRoutes");
+const walletRoutes = require("./routes/walletRoutes");
+const leaderboardRoutes = require("./routes/leaderboardRoutes");
 
 // ✅ Middleware
 app.use(express.json());
 
-// ✅ CORS (ONLY ONE)
+// ✅ CORS (for development + production)
 app.use(cors({
   origin: "*"
 }));
@@ -48,22 +26,23 @@ app.use(cors({
 // ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
+  .catch((err) => console.log("Mongo Error:", err));
 
-// ✅ Routes
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/steps", require("./routes/stepRoutes"));
-app.use("/api/wallet", require("./routes/walletRoutes"));
+// ✅ API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/steps", stepRoutes);
+app.use("/api/wallet", walletRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
 
-// ✅ Root route (IMPORTANT)
+// ✅ Root Route (for testing)
 app.get("/", (req, res) => {
   res.send("API running 🚀");
 });
 
-// ✅ PORT FIX
+// ✅ PORT (IMPORTANT FOR RENDER)
 const PORT = process.env.PORT || 5000;
 
+// ✅ Start Server
 app.listen(PORT, () => {
   console.log(Server running on port ${PORT});
 });
