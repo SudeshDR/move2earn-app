@@ -12,7 +12,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/api/leaderboard", leaderboardRoutes);
-
+// ✅ ADD CORS HERE
+app.use(cors({
+  origin: "https://move2earn.netlify.app"
+}));
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
