@@ -1,22 +1,14 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
 const User = require("../models/User");
 
 const router = express.Router();
 
-// Simple User Schema (temporary until we separate models)
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  password: String,
-  walletAddress: String,
-  totalSteps: { type: Number, default: 0 },
-  coins: { type: Number, default: 0 }
-});
-
-//const User = mongoose.model("User", userSchema);
+const resolveRole = (email) => {
+  const adminEmail = (process.env.ADMIN_EMAIL || "").trim().toLowerCase();
+  return adminEmail && email.toLowerCase() === adminEmail ? "admin" : "user";
+};
 
 // Signup
 router.post("/signup", async (req, res) => {
@@ -29,7 +21,8 @@ router.post("/signup", async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      walletAddress
+      walletAddress,
+      role: resolveRole(email)
     });
 
     res.json(user);
@@ -48,6 +41,12 @@ router.post("/login", async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid password" });
+
+    const resolvedRole = resolveRole(email);
+    if (user.role !== resolvedRole) {
+      user.role = resolvedRole;
+      await user.save();
+    }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 

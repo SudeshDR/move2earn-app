@@ -8,12 +8,16 @@ const app = express();
 // ✅ Load Models (IMPORTANT)
 require("./models/User");
 require("./models/StepLog");
+require("./models/Transaction");
+require("./models/Goal");
 
 // ✅ Import Routes
 const authRoutes = require("./routes/authRoutes");
-const stepRoutes = require("./routes/stepRoutes");
+const stepRoutes = require("./routes/stepRoutesV2");
 const walletRoutes = require("./routes/walletRoutes");
 const leaderboardRoutes = require("./routes/leaderboardRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const goalRoutes = require("./routes/goalRoutes");
 
 // ✅ Middleware
 app.use(express.json());
@@ -33,6 +37,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/steps", stepRoutes);
 app.use("/api/wallet", walletRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/goals", goalRoutes);
 
 // ✅ Root Route (for testing)
 app.get("/", (req, res) => {

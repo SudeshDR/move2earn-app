@@ -8,6 +8,7 @@ import TransactionHistory from "./pages/TransactionHistory";
 import MiningHistory from "./pages/MiningHistory";
 import Leaderboard from "./pages/Leaderboard";
 import HowItWorks from "./pages/HowItWorks";
+import Admin from "./pages/Admin";
 
 
 
@@ -38,6 +39,7 @@ function App() {
         <Route path="/mining-history" element={<MiningHistory />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </Router>
     

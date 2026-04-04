@@ -10,6 +10,7 @@ function Dashboard() {
   const [motionSteps, setMotionSteps] = useState(0);
 
   const [user, setUser] = useState(null);
+  const [goals, setGoals] = useState([]);
   const [stepsToAdd, setStepsToAdd] = useState(0);
   const [withdrawAmount, setWithdrawAmount] = useState(0);
 
@@ -21,8 +22,18 @@ function Dashboard() {
       navigate("/");
     } else {
       setUser(storedUser);
+      fetchGoals();
     }
   }, []);
+
+  const fetchGoals = async () => {
+    try {
+      const { data } = await API.get("/goals");
+      setGoals(data);
+    } catch (error) {
+      console.log("Unable to load goals", error);
+    }
+  };
 
   // ✅ AUTO WALK LOGIC
   useEffect(() => {
@@ -55,7 +66,12 @@ function Dashboard() {
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setMotionSteps(0);
 
-      alert("Steps saved!");
+      if (data.bonusCoins > 0) {
+        const goalNames = data.unlockedGoals.map((goal) => goal.badgeLabel).join(", ");
+        alert(`Steps saved! Bonus +${data.bonusCoins} coins from: ${goalNames}`);
+      } else {
+        alert("Steps saved!");
+      }
     } catch (err) {
       alert("Error saving steps");
     }
@@ -101,6 +117,10 @@ function Dashboard() {
       setUser(updatedUser);
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setStepsToAdd(0);
+      if (data.bonusCoins > 0) {
+        const goalNames = data.unlockedGoals.map((goal) => goal.badgeLabel).join(", ");
+        alert(`Goal reward unlocked: +${data.bonusCoins} coins from ${goalNames}`);
+      }
     } catch (error) {
       alert("Error adding steps");
     }
@@ -238,6 +258,50 @@ return (
         <button onClick={withdrawCoins} style={buttonStyle}>
           Withdraw
         </button>
+      </div>
+    </div>
+
+    <div className="goal-section">
+      <div className="goal-header">
+        <div>
+          <h2>Goal Badges</h2>
+          <p className="goal-subtext">
+            Unlock milestone tags as your total steps keep growing.
+          </p>
+        </div>
+      </div>
+
+      <div className="goal-grid">
+        {goals.length === 0 ? (
+          <div className="goal-card goal-card--empty">
+            <p>No goals have been set by admin yet.</p>
+          </div>
+        ) : (
+          goals.map((goal) => {
+            const achieved = user.totalSteps >= goal.stepsRequired;
+            const remaining = Math.max(goal.stepsRequired - user.totalSteps, 0);
+
+            return (
+              <div
+                key={goal._id}
+                className={`goal-card ${achieved ? "goal-card--earned" : "goal-card--locked"}`}
+              >
+                <span
+                  className="goal-badge-tag"
+                  style={{ backgroundColor: goal.color }}
+                >
+                  {goal.badgeLabel}
+                </span>
+                <h3>{goal.title}</h3>
+                <p className="goal-target">{goal.stepsRequired} step target</p>
+                <p className="goal-reward">Reward: +{goal.bonusCoins || 0} coins</p>
+                <p className="goal-status">
+                  {achieved ? "Unlocked" : `${remaining} more steps to unlock`}
+                </p>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
 

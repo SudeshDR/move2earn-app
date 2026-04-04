@@ -15,6 +15,7 @@ function Navbar() {
 
       <div className="navbar-links">
         {user && <Link to="/dashboard">Dashboard</Link>}
+        {user?.role === "admin" && <Link to="/admin">Admin</Link>}
         {!user && <Link to="/">Login</Link>}
         {!user && <Link to="/signup">Signup</Link>}
       </div>

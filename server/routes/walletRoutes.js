@@ -1,23 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const { ethers } = require("ethers");
+const Transaction = require("../models/Transaction");
 
 const router = express.Router();
 
 // Models
 const User = mongoose.model("User");
-
-// Transaction Schema
-const transactionSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  amount: Number,
-  walletAddress: String,
-  txHash: String,
-  status: { type: String, default: "completed" },
-  createdAt: { type: Date, default: Date.now }
-});
-
-const Transaction = mongoose.model("Transaction", transactionSchema);
 
 // ================= BLOCKCHAIN SETUP =================
 

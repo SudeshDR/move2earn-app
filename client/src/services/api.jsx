@@ -1,7 +1,9 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://move2earn-app.onrender.com/api"
+   baseURL: "https://move2earn-app.onrender.com/api"
+  //baseURL: "http://localhost:5000/api"
+
 });
 
 // Attach token automatically
